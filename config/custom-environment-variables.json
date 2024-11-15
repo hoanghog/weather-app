@@ -1,0 +1,11 @@
+{
+  "open-ai": {
+    "api-key": "OPEN_AI_API_KEY"
+  },
+  "google-map": {
+    "api-key": "GOOGLE_MAP_API_KEY"
+  },
+  "weather": {
+    "api-key": "WEATHER_API_KEY"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "licenses": [
+    "GPL-2.0+",
+    "GPL-2.0",
+    "LGPL-2.1+",
+    "GPLv3",
+    "BSD-3-Clause",
+    "BSD",
+    "MIT License"
+  ],
+  "exclude": [
+    "security_testing.yml",
+    "requirements.txt",
+    "reports/*",
+    "/bin/fossologyscanner/*",
+    "/usr/lib/python3.7/*"
+  ]
+}
+

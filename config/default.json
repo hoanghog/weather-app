@@ -1,0 +1,6 @@
+{
+  "applicationName": "WeatherApp",
+  "server": {
+    "port": 3001
+  }
+}

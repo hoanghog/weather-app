@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "description": "This is simple weather app. You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/). For this sample, you can use the api key `bearer Token` to test the authorization filters.",
+    "version": "1.0.0",
+    "name": "WeatherAppAI",
+    "basePath": "/",
+    "outputDirectory": ".",
+    "host": "localhost:3001",
+    "servers": [
+      {
+        "url": "http://localhost:3001"
+      }
+    ],
+    "schemes": [ "http", "https" ],
+    "securityDefinitions": {
+      "BearToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "specVersion": 3
+  },
+  "noImplicitAdditionalProperties": "silently-remove-extras",
+  "entryFile": "./src/app.ts"
+}
