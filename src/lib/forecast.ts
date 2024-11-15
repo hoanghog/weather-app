@@ -20,7 +20,7 @@ class Forecast {
     return this._uri;
   }
 
-  async getLocationByAddress(address: string) {
+  async getByAddress(address: string) {
     const result = (
       await axios.request<ForecastResponse>({
         method: 'GET',
@@ -33,7 +33,7 @@ class Forecast {
     ).data;
 
     if (result.error) {
-      throw new Error('Could not retrieve forecast.');
+      throw new Error(`Could not retrieve forecast. ${result.error.info}`);
     }
 
     return result;

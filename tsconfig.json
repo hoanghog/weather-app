@@ -46,23 +46,10 @@
     "paths": {
       "#lib/*": ["src/lib/*"],
       "#middlewares/*": ["src/middlewares/*"],
-      "#errors/*": ["src/errors/*"],
-      "#validations/*": ["src/validations/*"],
-      "#interfaces/*": ["src/interfaces/*"],
-      "#services/*": ["src/services/*"],
-      "#routes/*": ["src/routes/*"],
       
       "#v1-routes/*": ["src/v1/routes/*"],
       "#v1-services/*": ["src/v1/services/*"],
-      "#v1-iServices/*": ["src/v1/interfaces/services/*"],
       "#v1-validations/*": ["src/v1/validations/*"],
-      "#v1-errors/*": ["src/v1/errors/*"],
-      "#v1-lib/*": ["src/v1/lib/*"],
-      "#v1-dbMongo/*": ["src/v1/database/mongo/*"],
-      "#v1-dbMetadata/*": ["src/v1/database/metadata/*"],
-      "#v1-dbInventory/*": ["src/v1/database/inventory/*"],
-      "#v1-dbAppdata/*": ["src/v1/database/appdata/*"],
-      "#v1-dbElastic/*": ["src/v1/database/elastic/*"],
       "#v1-validator": ["src/v1/middlewares/validation-middleware.ts"],
 
       "tsoa": ["node_modules/tsoa/dist"]

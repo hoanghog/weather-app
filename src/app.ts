@@ -3,6 +3,7 @@ require('express-async-errors');
 import express from 'express';
 import config from 'config';
 import actuator from 'express-actuator';
+import error from '#middlewares/error-middleware';
 
 import ActuatorService from '#v1-services/actuator-service';
 
@@ -46,6 +47,7 @@ async function start() {
   app.use(express.json({ limit: '50mb' }));
 
   app.use('/weather', weatherRouter);
+  app.use(error);
 
   app.listen(port);
   console.log(`Listening on ${port} port.`);
