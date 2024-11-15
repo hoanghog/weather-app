@@ -1,11 +1,11 @@
-FROM node:18
+FROM node:20-slim
 
 LABEL maintainer="martinhoangdev@gmail.com" \
       os="node"
 
-
-# Bundle app source
 COPY . .
+
+RUN npm i
 
 EXPOSE 3001
 
