@@ -55,7 +55,7 @@ jobs:
       # Step 8: Get date
       - name: Get current date
         id: date
-        run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+        run: echo "DATE=$(date +%Y%m%d)-$(date +%s)" >> $GITHUB_ENV
 
       # Step 9: Build and push the Docker image with the new version tag
       - name: Build and push Docker image
