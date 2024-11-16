@@ -4,7 +4,7 @@ import config from 'config';
 const apiKey = config.get<string>('google-map.api-key');
 
 interface GeocodeResponse {
-  response: {
+  results: {
     geometry: {
       location: {
         lat: number;
@@ -37,11 +37,11 @@ class GoogleMap {
       })
     ).data;
 
-    if (result.status !== 'OK' || result.response.length === 0) {
+    if (result.status !== 'OK' || result.results.length === 0) {
       throw new Error('Couldn\'t find address.');
     }
 
-    return result.response[0].geometry.location;
+    return result.results[0].geometry.location;
   }
 }
 

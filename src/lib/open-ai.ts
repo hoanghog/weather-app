@@ -14,13 +14,13 @@ class AI {
     return this._openai;
   }
 
-  async generateForecast(forecast: Record<string, any>, style: 'factual' | 'tabloid', lang: 'sk' | 'en'): Promise<string | null> {
+  async generateForecast(forecast: Record<string, any>, style: 'factual' | 'tabloid', lang: 'sk' | 'en'): Promise<string> {
     const language = lang === 'sk' ? 'slovak' : 'english';
     let text =
       style === 'factual'
         ? `Write a factual news article about the following weather forecast: ${JSON.stringify(forecast)}.`
         : `Write a sensational, tabloid-style news article about the following weather forecast: ${JSON.stringify(forecast)}.`;
-    text += ` In ${language} language. News must have heading, perex and body.`;
+    text += ` In ${language} language and use celsius. News must have heading, perex and body.`;
 
     const response = await this.openai.chat.completions.create({
       model: 'gpt-4o',
@@ -37,6 +37,10 @@ class AI {
       ],
       temperature: style === 'tabloid' ? 1.0 : 0.2
     });
+
+    if (!response.choices[0].message.content) {
+      throw new Error('No content in response.');
+    }
 
     return response.choices[0].message.content;
   }

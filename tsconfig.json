@@ -50,6 +50,8 @@
       "#v1-routes/*": ["src/v1/routes/*"],
       "#v1-services/*": ["src/v1/services/*"],
       "#v1-validations/*": ["src/v1/validations/*"],
+      "#v1-dbInterfaces/*": ["src/v1/interfaces/database/*"],
+      "#v1-database/*": ["src/v1/database/*"],
       "#v1-validator": ["src/v1/middlewares/validation-middleware.ts"],
 
       "tsoa": ["node_modules/tsoa/dist"]

@@ -9,10 +9,17 @@ import ActuatorService from '#v1-services/actuator-service';
 
 import weatherRouter from '#v1-routes/weather-route';
 
+import MongoDB from '#lib/mongo-db';
+import Agenda from '#lib/agenda';
+
 async function start() {
   const PORT = 3001;
   const app = express();
   const port = config.get<number>('server.port') || PORT;
+
+  await MongoDB.connect();
+  await Agenda.initialize();
+
   app.use(
     actuator({
       basePath: '/mngmt',
@@ -43,6 +50,7 @@ async function start() {
       ]
     })
   );
+
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ limit: '50mb' }));
 

@@ -4,36 +4,37 @@ import config from 'config';
 const apiKey = config.get<string>('weather.api-key');
 
 interface ForecastResponse {
-  request: Record<string, string>;
-  location: Record<string, string | number>;
-  current: Record<string, string | object | number | Array<string>>;
-  error: Record<string, string>;
+  [key: string]: unknown;
+  cod?: string;
+  message: string;
 }
 
 class Forecast {
   private _uri: string;
   constructor() {
-    this._uri = 'http://api.weatherstack.com/current';
+    this._uri = 'https://api.openweathermap.org/data/3.0/onecall';
   }
 
   private get uri() {
     return this._uri;
   }
 
-  async getByAddress(address: string) {
+  async getByLocation(lat: number, lon: number) {
     const result = (
       await axios.request<ForecastResponse>({
         method: 'GET',
         url: `${this._uri}`,
         params: {
-          query: address,
-          access_key: apiKey
+          exclude: 'current,minutely,daily,alerts',
+          lat,
+          lon,
+          appid: apiKey
         }
       })
     ).data;
 
-    if (result.error) {
-      throw new Error(`Could not retrieve forecast. ${result.error.info}`);
+    if (result.cod && result.cod === '400') {
+      throw new Error(`Could not retrieve forecast. ${result.message}`);
     }
 
     return result;
