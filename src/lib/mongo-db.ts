@@ -35,6 +35,11 @@ class MongoDB {
   async connect() {
     await this.client.connect();
     this.db = this.client.db(this.dbName);
+    this.createIndex();
+  }
+
+  private async createIndex() {
+    await this.db.collection('forecast').createIndex({ date: 1, location: 1 });
   }
 }
 

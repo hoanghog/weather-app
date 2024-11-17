@@ -6,8 +6,8 @@ import { Request, Response } from 'express';
 const router = express.Router();
 
 router.get('/', Validator.validateQuery('weather', 'getByAddress'), async (req: Request, res: Response) => {
-  const result = await WeatherService.getByAddress(
-    req.query.address as string,
+  const result = await WeatherService.getByLocation(
+    req.query.location as string,
     req.query.type as 'factual' | 'tabloid',
     req.query.language as 'sk' | 'en'
   );
