@@ -3,7 +3,7 @@ require('express-async-errors');
 import express from 'express';
 import config from 'config';
 import actuator from 'express-actuator';
-import error from '#middlewares/error-middleware';
+import swaggerUi from 'swagger-ui-express';
 
 import ActuatorService from '#v1-services/actuator-service';
 
@@ -11,6 +11,8 @@ import weatherRouter from '#v1-routes/weather-route';
 
 import MongoDB from '#lib/mongo-db';
 import Agenda from '#lib/agenda';
+
+import error from '#middlewares/error-middleware';
 
 async function start() {
   const PORT = 3001;
@@ -54,7 +56,15 @@ async function start() {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ limit: '50mb' }));
 
-  app.use('/weather', weatherRouter);
+  app.use('/v1/weather', weatherRouter);
+
+  try {
+    const swaggerDocument = require('../swagger.json');
+    app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  } catch (err: any) {
+    console.error(err, undefined, 'Unable to read swagger.json, try to call "npm run swagger" before application start.');
+  }
+
   app.use(error);
 
   app.listen(port);

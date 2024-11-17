@@ -51,11 +51,11 @@ class AgendaClass {
   async initialize() {
     await this.agenda.start();
     // Needs to wait cause rate limit on ChatGPT side
-    await this.agenda.every('0 14 * * *', 'generateForecastBratislava');
-    await this.agenda.every('7 14 * * *', 'generateForecastMunich');
-    await this.agenda.every('15 14 * * *', 'generateForecastParis');
-    await this.agenda.every('22 14 * * *', 'generateForecastWarsaw');
-    await this.agenda.every('30 14 * * *', 'generateForecastPrague');
+    await this.agenda.every('0 0 * * *', 'generateForecastBratislava');
+    await this.agenda.every('7 0 * * *', 'generateForecastMunich');
+    await this.agenda.every('15 0 * * *', 'generateForecastParis');
+    await this.agenda.every('22 0 * * *', 'generateForecastWarsaw');
+    await this.agenda.every('30 0 * * *', 'generateForecastPrague');
   }
 
   private get agenda() {

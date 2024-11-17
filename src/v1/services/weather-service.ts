@@ -1,6 +1,7 @@
 import OpenAI from '#lib/open-ai';
 import Forecast from '#lib/forecast';
 import GoogleMap from '#lib/google-map';
+import { Route, Query, Tags, Response, Get } from 'tsoa';
 
 import ServiceClass from '#lib/service-class';
 
@@ -8,8 +9,13 @@ import ForecastDB from '#v1-database/forecast-db';
 
 import { Create } from '#v1-dbInterfaces/forecast';
 
+@Route('/v1/weather')
+@Tags('Weather')
 class WeatherService extends ServiceClass {
-  async getByLocation(location: string, type: 'factual' | 'tabloid', language: 'sk' | 'en') {
+  @Get('/')
+  @Response(401, 'Validation error')
+  @Response(400, 'Application error')
+  async getByLocation(@Query() location: string, @Query() type: 'factual' | 'tabloid', @Query() language: 'sk' | 'en') {
     const interval = this._getInterval();
 
     let forecast;
@@ -29,9 +35,8 @@ class WeatherService extends ServiceClass {
   }
 
   async generateNews(location: string, skipCheck = false) {
+    const interval = this._getInterval();
     if (skipCheck) {
-      const interval = this._getInterval();
-
       let forecast;
       try {
         forecast = await ForecastDB.getByInterval(interval.from, interval.to, location);
@@ -54,7 +59,7 @@ class WeatherService extends ServiceClass {
 
     let forecastData;
     try {
-      forecastData = await Forecast.getByLocation(coordinates.lat, coordinates.lng);
+      forecastData = await Forecast.getByLocation(coordinates.lat, coordinates.lng, interval);
     } catch (e: any) {
       throw this.createError('ForecastGetByLocationFailed', 'Failed to call forecast getByLocation.', 400, e);
     }
