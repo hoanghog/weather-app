@@ -28,8 +28,8 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ./terraform
-        run: terraform plan
+        run: terraform plan -var="app_port=3001"
 
       - name: Terraform Apply
         working-directory: ./terraform
-        run: terraform apply -replace aws_instance.weather_app -auto-approve
+        run: terraform apply -var="app_port=3001" -replace aws_instance.weather_app -auto-approve
