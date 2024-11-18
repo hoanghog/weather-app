@@ -6,7 +6,7 @@ terraform {
     }
   }
 
-  backend "s3" { # Replace with your remote state backend
+  backend "s3" {
     bucket         = "terraform-weather"
     key            = "weather-app/terraform.tfstate"
     region         = "eu-central-1"
@@ -15,34 +15,38 @@ terraform {
 }
 
 # Configure the AWS Provider
-# !!Use your own access and secret keys!!
 provider "aws" {
   region = "eu-central-1"
 }
 
 # Creating a VPC
 resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr_block
+  cidr_block = "10.0.0.0/16"
   tags = {
-    "Name" = "Weather ${var.main_vpc_name}"
+    "Name" = "Weather challenge"
   }
 }
 
 # Creating a subnet in the VPC
 resource "aws_subnet" "web" {
+  count = 2
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.web_subnet
-  availability_zone = var.subnet_zone
+  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
+
   tags = {
     "Name" = "Web subnet"
   }
 }
 
+data "aws_availability_zones" "available" {}
+
 # Creating an Intenet Gateway
 resource "aws_internet_gateway" "my_web_igw" {
   vpc_id = aws_vpc.main.id
   tags = {
-    "Name" = "${var.main_vpc_name} IGW"
+    "Name" = "challenge IGW"
   }
 }
 
@@ -55,7 +59,7 @@ resource "aws_default_route_table" "main_vpc_default_rt" {
     gateway_id = aws_internet_gateway.my_web_igw.id
   }
   tags = {
-    "Name" = "my-default-rt"
+    "Name" = "Default RT"
   }
 }
 
@@ -76,8 +80,8 @@ resource "aws_default_security_group" "default_sec_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = var.app_port
-    to_port     = var.app_port
+    from_port   = 3001
+    to_port     = 3001
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -89,6 +93,42 @@ resource "aws_default_security_group" "default_sec_group" {
   }
   tags = {
     "Name" = "Default Security Group"
+  }
+}
+
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg"
+  description = "Allow HTTP traffic to ALB"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" 
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Weather ALB SG"
+  }
+}
+resource "aws_lb" "my_alb" {
+  name               = "weather-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets            = aws_subnet.web[*].id
+
+  tags = {
+    Name = "Weather ALB"
   }
 }
 
@@ -118,7 +158,7 @@ data "aws_iam_role" "ec2_role" {
 resource "aws_instance" "weather_app" {
   ami                         = data.aws_ami.latest_amazon_linux2.id
   instance_type               = "t2.micro"
-  subnet_id                   = aws_subnet.web.id
+  subnet_id                   = aws_subnet.web[0].id
   vpc_security_group_ids      = [aws_default_security_group.default_sec_group.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.key_pair.key_name
@@ -127,5 +167,42 @@ resource "aws_instance" "weather_app" {
 
   tags = {
     "Name" : "Amazon Linux 2023"
+  }
+}
+
+resource "aws_lb_target_group" "my_target_group" {
+  name     = "weather-tg"
+  port     = 3001
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  health_check {
+    path                = "/mngmt/liveness"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+
+  tags = {
+    Name = "Weather TG"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "my_target_attachment" {
+  count             = 1
+  target_group_arn  = aws_lb_target_group.my_target_group.arn
+  target_id         = aws_instance.weather_app.id
+  port              = 3001
+}
+
+resource "aws_lb_listener" "http_listener" {
+  load_balancer_arn = aws_lb.my_alb.arn 
+  port              = 80               
+  protocol          = "HTTP"           
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.my_target_group.arn
   }
 }
