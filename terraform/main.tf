@@ -108,7 +108,7 @@ data "aws_ami" "latest_amazon_linux2" {
 
 resource "aws_key_pair" "key_pair" {
   key_name   = "challenge_ssh_key"
-  public_key = file(var.public_key)
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDT3ZzLbzYUrtZC2X0dPtyPubrGYYJDqsHa0IX4OfJB5wkhARPCioAl99hG1CK6c6n7FDv4GEllQt2Y4Kn7i3+h6znQ2wXRrorLnsRNCvxLb/OJy5LwT7WOrvvsUaF62j3BWkiZ0c52SVbLuW5umo6AEKfMQaXhD+EvSLgtZXfkcrFCsQDeG3lnPyrOZhzHNqHK6TRDDhgpfyrveLD7cjL92dIz8ikuGTczfIO6XoiLSuBEmAQXV6eWMrbCYYyjDodVPIU5eRh3jpr9roXCgMluhhgSOCraMU/CtU+CEzqLQ2CQDH8FY2sUy2gKXtKtINdVw4akJ2qwnlERqxvn/YZV martinhoangdev@gmail.com"
 }
 
 data "aws_iam_role" "ec2_role" {
