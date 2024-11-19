@@ -12,10 +12,14 @@ import { Create } from '#v1-dbInterfaces/forecast';
 @Route('/v1/weather')
 @Tags('Weather')
 class WeatherService extends ServiceClass {
+  /**
+   * Api gets current forecast in chosen language (default sk) and type (default factual) for given location.
+   * If forecast for location is generated, then forecast is returned from MongoDB, otherwise it will be generated, stored and returned.
+   */
   @Get('/')
   @Response(401, 'Validation error')
   @Response(400, 'Application error')
-  async getByLocation(@Query() location: string, @Query() type: 'factual' | 'tabloid', @Query() language: 'sk' | 'en') {
+  async get(@Query() location: string, @Query() type: 'factual' | 'tabloid', @Query() language: 'sk' | 'en') {
     const interval = this._getInterval();
 
     let forecast;
@@ -32,6 +36,36 @@ class WeatherService extends ServiceClass {
     const mongoObj = await this.generateNews(location, true);
 
     return { news: mongoObj[type][language] };
+  }
+
+  /**
+   * Api return historical data in chosen language (default sk) and type (default factual) for given location and date.
+   * Forecast should be stored in MongoDB, if not found returns 404.
+   */
+  @Get('/historical')
+  @Response(401, 'Validation error')
+  @Response(400, 'Application error')
+  @Response(404, 'Not found')
+  async getHistorical(
+    @Query() location: string,
+    @Query() date: Date,
+    @Query() type: 'factual' | 'tabloid',
+    @Query() language: 'sk' | 'en'
+  ) {
+    const interval = this._getInterval(date);
+
+    let forecast;
+    try {
+      forecast = await ForecastDB.getByInterval(interval.from, interval.to, location);
+    } catch (e: any) {
+      throw this.createError('ForecastDBGetByIntervalFailed', 'Failed to call get by interval.', 400, e);
+    }
+
+    if (!forecast) {
+      throw this.createError('ForecastDoesNotExist', 'Historical forecast does not exist.', 404);
+    }
+
+    return { news: forecast[type][language] };
   }
 
   async generateNews(location: string, skipCheck = false) {

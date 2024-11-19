@@ -38,7 +38,7 @@ class GoogleMap {
     ).data;
 
     if (result.status !== 'OK' || result.results.length === 0) {
-      throw new Error('Couldn\'t find address.');
+      throw new Error('Could not find address.');
     }
 
     return result.results[0].geometry.location;

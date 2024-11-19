@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('express-async-errors');
 
 import express from 'express';
@@ -59,6 +60,7 @@ async function start() {
   app.use('/v1/weather', weatherRouter);
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const swaggerDocument = require('../swagger.json');
     app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   } catch (err: any) {
